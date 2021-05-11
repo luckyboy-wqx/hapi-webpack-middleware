@@ -4,7 +4,7 @@ const Webpack=require('webpack');
 
 exports.plugin={
 	name:"hapi-webpack-middleware",
-	version:"1.0.0",
+	version:"1.0.5",
 	pkg:require('./package.json'),
 	register:async function(server,options){
 		const config = options.config;
