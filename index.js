@@ -18,11 +18,9 @@ exports.plugin={
 	        const res = request.raw.res;
 
 	        devMiddleware(req, res, (err) => {
-
 	            if (err) {
 	                return reply(err);
 	            }
-
 	            return reply.continue();
 	        });
 	    });
@@ -33,11 +31,9 @@ exports.plugin={
 	        const res = request.raw.res;
 
 	        hotMiddleware(req, res, (err) => {
-
 	            if (err) {
 	                return reply(err);
 	            }
-
 	            return reply.continue();
 	        });
 	    });
