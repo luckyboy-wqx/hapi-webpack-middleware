@@ -4,7 +4,7 @@ const Webpack=require('webpack');
 
 exports.plugin={
 	name:"hapi-webpack-middleware",
-	version:"1.0.5",
+	version:"1.0.0",
 	pkg:require('./package.json'),
 	register:async function(server,options){
 		const config = options.config;
@@ -13,30 +13,51 @@ exports.plugin={
 	    const devMiddleware = WebpackDevMiddleware(compiler, options.options);
 	    const hotMiddleware = WebpackHotMiddleware(compiler, options.options);
 
-	    server.ext('onRequest', (request, reply) => {
-	        const req = request.raw.req;
-	        const res = request.raw.res;
-
-	        devMiddleware(req, res, (err) => {
-	            if (err) {
-	                return reply(err);
-	            }
-	            return reply.continue();
-	        });
+	    server.ext({
+	    	type:'onRequest',
+	    	method:async (request,h)=>{
+	    		const {req,res}=request.raw;
+	    		try {
+	    			let setWebpackDevMiddleware = new Promise((resolve,reject)=>{
+	    				devMiddleware(req,res,(err)=>{
+	    					if(err){
+	    						reject();
+	    					}
+	    					resolve();
+	    				})
+	    			});
+	    			await setWebpackDevMiddleware;
+	    			return h.continue;
+	    		}
+	    		catch(err){
+	    			throw err;
+	    		}
+	    	}
 	    });
 
-	    server.ext('onRequest', (request, reply) => {
+	    server.ext({
+	    	type:'onRequest',
+	    	method:async (request,h)=>{
+	    		const {req,res}=request.raw;
+	    		try {
+	    			let setWebpackHotMiddleware = new Promise((resolve,reject)=>{
+	    				hotMiddleware(req,res,(err)=>{
+	    					if(err){
+	    						reject();
+	    					}
+	    					resolve();
+	    				})
+	    			});
+	    			await setWebpackHotMiddleware;
+	    			return h.continue;
+	    		}
+	    		catch(err){
+	    			throw err;
+	    		}
+	    	}
+	    })
 
-	        const req = request.raw.req;
-	        const res = request.raw.res;
 
-	        hotMiddleware(req, res, (err) => {
-	            if (err) {
-	                return reply(err);
-	            }
-	            return reply.continue();
-	        });
-	    });
 
 	}
 }
